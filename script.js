@@ -5,10 +5,13 @@ const timeDisplay = document.getElementById('time');
 const taskList = document.getElementById('task-list');
 const newTaskInput = document.getElementById('new-task');
 const addTaskButton = document.getElementById('add-task');
+const workSound = document.getElementById('work-sound');
+const breakSound = document.getElementById('break-sound');
 
 let timer;
 let minutes = 25;
 let seconds = 0;
+let isWorking = true;
 
 startButton.addEventListener('click', startTimer);
 stopButton.addEventListener('click', stopTimer);
@@ -31,10 +34,10 @@ function stopTimer() {
 
 function resetTimer() {
     clearInterval(timer);
+    startButton.disabled = false;
     minutes = 25;
     seconds = 0;
     timeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    startButton.disabled = false;
     saveTimerToLocalStorage();
 }
 
@@ -47,6 +50,13 @@ function updateTimer() {
     } else {
         clearInterval(timer);
         startButton.disabled = false;
+        playNotificationSound();
+        isWorking = !isWorking;
+        if (isWorking) {
+            minutes = 25;
+        } else {
+            minutes = 5;
+        }
     }
 
     timeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
@@ -109,4 +119,12 @@ function loadTimerFromLocalStorage() {
     minutes = parseInt(localStorage.getItem('minutes')) || 25;
     seconds = parseInt(localStorage.getItem('seconds')) || 0;
     timeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+function playNotificationSound() {
+    if (isWorking) {
+        workSound.play();
+    } else {
+        breakSound.play();
+    }
 }
